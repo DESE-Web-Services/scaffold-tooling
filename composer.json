@@ -3,7 +3,7 @@
     "description": "A variety of standard config, scripts and packages to support GovCMS scaffold.",
     "require": {
         "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
-        "drupal/chosen_lib": "2.6.0",
+        "drupal/chosen_lib": "^2.8",
         "drupal/clamav": "1.1.0",
         "drupal/coder": "^8.3",
         "drupal/console": "^1.0.2",
