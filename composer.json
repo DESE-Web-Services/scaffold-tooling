@@ -1,5 +1,5 @@
 {
-    "name": "employment/scaffold-tooling",
+    "name": "deptcms/scaffold-tooling",
     "description": "A variety of standard config, scripts and packages to support GovCMS scaffold.",
     "require": {
         "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
