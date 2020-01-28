@@ -12,7 +12,8 @@
 $settings['container_yamls'][] = $govcms_includes . '/all.services.yml';
 
 // Config directory.
-$config_directories[CONFIG_SYNC_DIRECTORY] = '../config/sync';
+$config_directories[CONFIG_SYNC_DIRECTORY] = '../config/default';
+$settings['config_sync_directory'] = '../config/default';
 
 // @see https://govdex.gov.au/jira/browse/GOVCMS-993
 // @see https://github.com/drupal/drupal/blob/7.x/sites/default/default.settings.php#L518
