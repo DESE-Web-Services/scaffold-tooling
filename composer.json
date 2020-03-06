@@ -1,6 +1,12 @@
 {
     "name": "deptcms/scaffold-tooling",
     "description": "A variety of standard config, scripts and packages to support GovCMS scaffold.",
+    "minimum-stability": "dev",
+    "repositories": [
+        {   "type": "composer",
+            "url": "https://repo.packagist.com/empdev/d8/"
+        }
+    ],
     "require": {
         "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
         "drupal/chosen_lib": "^2.8",
