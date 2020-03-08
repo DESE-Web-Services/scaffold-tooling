@@ -40,8 +40,8 @@ $config['system.performance']['js']['preprocess'] = FALSE;
 /**
  * Disable render caches for twig files to be reloaded on every page view.
  */
-$settings['cache']['bins']['render'] = 'cache.backend.null';
-$settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.null';
+# $settings['cache']['bins']['render'] = 'cache.backend.null';
+# $settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.null';
 
 // Stage file proxy.
 if (getenv('STAGE_FILE_PROXY_URL')) {
