@@ -11,7 +11,7 @@
 
 // Corresponding services.yml.
 // phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
-$settings['container_yamls'][] = $govcms_settings . '/production.services.yml';
+$settings['container_yamls'][] = $govcms_includes . '/production.services.yml';
 
 // Inject Google Analytics snippet on all production sites.
 $config['google_analytics.settings']['codesnippet']['after'] = "gtag('config', 'UA-54970022-1', {'name': 'govcms'}); gtag('govcms.send', 'pageview', {'anonymizeIp': true})";
