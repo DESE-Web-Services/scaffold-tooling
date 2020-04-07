@@ -11,7 +11,7 @@
 
 // Corresponding services.yml.
 // phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
-$settings['container_yamls'][] = $govcms_settings . '/production.services.yml';
+$settings['container_yamls'][] = $govcms_includes . '/production.services.yml';
 
 // Don't show any error messages on the site (will still be shown in watchdog).
 $config['system.logging']['error_level'] = 'hide';

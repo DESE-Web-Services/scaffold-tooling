@@ -12,7 +12,7 @@
 
 // Corresponding services.yml.
 // phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
-$settings['container_yamls'][] = $govcms_settings . '/all.services.yml';
+$settings['container_yamls'][] = $govcms_includes . '/all.services.yml';
 
 // Config directory.
 $settings['config_sync_directory'] = '../config/default';
