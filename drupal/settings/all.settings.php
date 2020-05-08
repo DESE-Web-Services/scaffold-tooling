@@ -14,19 +14,20 @@
 // phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
 $settings['container_yamls'][] = $govcms_includes . '/all.services.yml';
 
-// Config directory.
+// Drupal 8 config.
+$config_directories[CONFIG_SYNC_DIRECTORY] = '../config/default';
+// Drupal 9 ready.
 $settings['config_sync_directory'] = '../config/default';
 
 // @see https://govdex.gov.au/jira/browse/GOVCMS-993
 // @see https://github.com/drupal/drupal/blob/7.x/sites/default/default.settings.php#L518
 // @see https://api.drupal.org/api/drupal/includes%21bootstrap.inc/function/drupal_fast_404/8.x
-$config_directories[CONFIG_SYNC_DIRECTORY] = '../config/default';
 $contrib_path = 'modules/contrib';
 if (file_exists($contrib_path . '/fast404/fast404.inc')) {
   include_once $contrib_path . 'fast404/fast404.inc';
 }
 // @todo this should be in the if block above?
-$settings['fast404_exts'] = '/^(?!robots)^(?!sites\/default\/files\/private).*\.(?:png|gif|jpe?g|svg|tiff|bmp|raw|webp|docx?|xlsx?|pptx?|swf|flv|cgi|dll|exe|nsf|cfm|ttf|bat|pl|asp|ics|rtf)$/i';
+$settings['fast404_exts'] = getenv('GOVCMS_FAST404_EXTS') ?: '/^(?!robots)^(?!\/system\/files).*\.(?:png|gif|jpe?g|svg|tiff|bmp|raw|webp|pdf?|docx?|xlsx?|pptx?|swf|flv|cgi|dll|exe|nsf|cfm|ttf|bat|pl|asp|ics|rtf)$/i';
 $settings['fast404_html'] = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL "@path" was not found on this server.</p></body></html>';
 $settings['fast404_whitelist'] = ['robots.txt', 'system/files'];
 
@@ -101,6 +102,11 @@ $settings['redirect_page_cache'] = TRUE;
 
 // Ensure that administrators do not block drush access through the UI.
 $config['shield.settings']['allow_cli'] = TRUE;
+
+// Enforce correct solr server configuration (GOVCMS-4634).
+// Fix for 8.5.0 and the solr upgrade.
+$config['search_api.server.lagoon_solr']['backend_config']['connector_config']['path'] = '/';
+$config['search_api.server.lagoon_solr']['backend_config']['connector_config']['core'] = 'drupal';
 
 // Configure seckit to emit the HSTS headers when a user is likely visiting
 // govCMS using a domain with valid SSL.
