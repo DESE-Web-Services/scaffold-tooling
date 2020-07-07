@@ -1,0 +1,34 @@
+diff --git a/clamav.info.yml b/clamav.info.yml
+index 0f1bbeb..3a4f0be 100644
+--- a/clamav.info.yml
++++ b/clamav.info.yml
+@@ -2,5 +2,5 @@ name: ClamAV Anti-Virus
+ type: module
+ description: 'Integration with the ClamAV anti-virus scanner.'
+ package: Anti-virus
+-core: 8.x
++core_version_requirement: ^8 || ^9
+ configure: clamav.admin_display
+diff --git a/src/Scanner.php b/src/Scanner.php
+index 532cf53..546a869 100644
+--- a/src/Scanner.php
++++ b/src/Scanner.php
+@@ -106,12 +106,12 @@ class Scanner {
+    */
+   public function isScannable(FileInterface $file) {
+     // Check whether this stream-wrapper scheme is scannable.
+-    if (!empty($file->destination)) {
+-      $scheme = \Drupal::service('file_system')->uriScheme($file->destination);
+-    }
+-    else {
+-      $scheme = \Drupal::service('file_system')->uriScheme($file->getFileUri());
+-    }
++      if (!empty($file->destination)) {
++        $scheme = \Drupal::service('stream_wrapper_manager')->getScheme($file->destination);
++      }
++      else {
++        $scheme = \Drupal::service('stream_wrapper_manager')->getScheme($file->getFileUri());
++      }
+     $scannable = self::isSchemeScannable($scheme);
+ 
+     // Iterate each module implementing hook_clamav_file_is_scannable().
