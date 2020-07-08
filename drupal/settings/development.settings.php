@@ -9,7 +9,13 @@
  * Include development services yml.
  */
 
-// Corresponding services.yml.
+// See comment in all.settings.php.
+// phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
+$govcms_includes = isset($govcms_includes) ? $govcms_includes : __DIR__;
+
+/**
+ * Include the corresponding *.services.yml.
+ */
 // phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
 $settings['container_yamls'][] = $govcms_includes . '/development.services.yml';
 

@@ -5,11 +5,15 @@
  * Production settings. Included from settings.php.
  */
 
-/**
- * Include production.services.yml.
- */
+// phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
 
-// Corresponding services.yml.
+// See comment in all.settings.php.
+// phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
+$govcms_includes = isset($govcms_includes) ? $govcms_includes : __DIR__;
+
+/**
+ * Include the corresponding *.services.yml.
+ */
 // phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
 $settings['container_yamls'][] = $govcms_includes . '/production.services.yml';
 
