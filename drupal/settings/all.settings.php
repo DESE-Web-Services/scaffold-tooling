@@ -142,10 +142,9 @@ else {
 }
 
 // Add SMTP credentials from environment variables.
-// Disabled for now until there's a fix for the SMTP Authentication module.
-/**
+
 if (getenv('SMTP_USERNAME') AND getenv('SMTP_PASSWORD')) {
   $config['smtp.settings']['smtp_username'] = getenv('SMTP_USERNAME');
   $config['smtp.settings']['smtp_password'] = getenv('SMTP_PASSWORD');
 }
- */
+
