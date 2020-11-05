@@ -38,6 +38,21 @@ $config['google_analytics.settings']['account'] = 'UA-XXXXXXXX-YY';
 $config['system.performance']['cache']['page']['max_age'] = 0;
 
 /**
+ * Disable Akamai purging.
+ */
+$config['akamai.settings']['disabled'] = TRUE;
+
+/**
+ * Set dummy Key values in place of missing env variables.
+ */
+$config['key.key.akamai_access_token']['key_provider'] = 'config';
+$config['key.key.akamai_access_token']['key_provider_settings']['key_value'] = '1';
+$config['key.key.akamai_client_token']['key_provider'] = 'config';
+$config['key.key.akamai_client_token']['key_provider_settings']['key_value'] = '1';
+$config['key.key.akamai_client_secret']['key_provider'] = 'config';
+$config['key.key.akamai_client_secret']['key_provider_settings']['key_value'] = '1';
+
+/**
  * Disable CSS and JS aggregation.
  */
 $config['system.performance']['css']['preprocess'] = FALSE;
