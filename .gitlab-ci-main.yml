@@ -1,5 +1,5 @@
 ---
-image: docker.io/grahamethompson/deptcms-ci:php7.3
+image: docker.io/govcms/govcms-ci
 services:
   - "docker:dind"
 stages:
