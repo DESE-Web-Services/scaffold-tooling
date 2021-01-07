@@ -161,12 +161,9 @@ audit_on_merge:
 # MRs only.
 composer_update:
   <<: *bootstrap_template
-  extends: .job-preflight
+  extends: .job-composer-update
   script:
       docker-compose exec -T cli bash -c 'composer update --no-interaction --no-suggest'
-  only:
-    variables:
-      - $variables[COMPOSER_UPDATE_FROM_API]=true
 
 # Deploy / summary.
 deploy:
