@@ -162,7 +162,8 @@ audit_on_merge:
 composer_update:
   extends: .job-composer-update
   script:
-      docker-compose exec -T cli bash -c 'composer update --no-interaction --no-suggest'
+      - composer update --no-interaction --no-suggest
+      - git status
   only:
     variables:
       - $COMPOSER_UPDATE_FROM_API == "true"
