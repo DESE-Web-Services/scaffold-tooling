@@ -9,6 +9,7 @@ stages:
   - deploy
 variables:
   extends: .variables
+  DOCKER_HOST: "tcp://localhost:2375"
 
 ##
 # Test setups.
@@ -163,6 +164,10 @@ composer_update:
   extends: .job-composer-update
   script:
       docker-compose exec -T cli bash -c 'composer update --no-interaction --no-suggest'
+  only:
+    variables:
+      - $COMPOSER_UPDATE_FROM_API == "true"
+  stage: deploy
 
 # Deploy / summary.
 deploy:
