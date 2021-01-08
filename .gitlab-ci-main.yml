@@ -9,7 +9,6 @@ stages:
   - deploy
 variables:
   extends: .variables
-  DOCKER_HOST: "tcp://localhost:2375"
 
 ##
 # Test setups.
