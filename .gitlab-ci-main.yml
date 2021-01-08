@@ -164,6 +164,9 @@ composer_update:
   script:
       - composer update --no-interaction --no-suggest
       - git status
+      - core_version=`composer show 'drupal/core' | grep 'versions' | grep -o -E '\*\ .+' | cut -d' ' -f2 | cut -d',' -f1`
+      - git checkout -b feature/core-update-${CORE_VERSION}
+      - git commit -a -m "Use ${CI_PROJECT_NAME} artifacts from pipeline ${CI_PIPELINE_ID} using Drupal core version ${CORE_VERSION}"
   only:
     variables:
       - $COMPOSER_UPDATE_FROM_API == "true"
