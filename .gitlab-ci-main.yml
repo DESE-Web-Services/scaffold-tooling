@@ -162,7 +162,7 @@ audit_on_merge:
 composer_update:
   extends: .job-composer-update
   script:
-      # - composer update --no-interaction --no-suggest
+      - composer update --no-interaction --no-suggest
       - git status
       - git config --global user.email "webservices@dese.gov.au"
       - git config --global user.name "Webservices bot"
