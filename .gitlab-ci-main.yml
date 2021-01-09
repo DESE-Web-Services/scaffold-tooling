@@ -167,7 +167,8 @@ composer_update:
       - git config --global user.email "webservices@dese.gov.au"
       - git config --global user.name "Webservices bot"
       - echo ${K8S_SECRET_GITBOT_TOKEN}
-      - core_version=`composer show 'drupal/core' | grep 'versions' | grep -o -E '\*\ .+' | cut -d' ' -f2 | cut -d',' -f1`
+      # - core_version=`composer show 'drupal/core' | grep 'versions' | grep -o -E '\*\ .+' | cut -d' ' -f2 | cut -d',' -f1`
+      - core_version=test
       - git checkout -b feature/core-update-${CORE_VERSION}
       - git add composer.lock
       - git commit -a -m "Use ${CI_PROJECT_NAME} artifacts from pipeline ${CI_PIPELINE_ID} using Drupal core version ${CORE_VERSION}"
