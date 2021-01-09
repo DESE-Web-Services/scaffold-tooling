@@ -166,6 +166,7 @@ composer_update:
       - git status
       - git config --global user.email "webservices@dese.gov.au"
       - git config --global user.name "Webservices bot"
+      - git remote set-url origin https://webservices:${K8S_SECRET_GITBOT_TOKEN}@projects.govcms.gov.au/$CI_PROJECT_PATH.git 
       - echo ${K8S_SECRET_GITBOT_TOKEN}
       # - core_version=`composer show 'drupal/core' | grep 'versions' | grep -o -E '\*\ .+' | cut -d' ' -f2 | cut -d',' -f1`
       - CORE_VERSION=test
