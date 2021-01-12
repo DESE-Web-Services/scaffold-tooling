@@ -118,7 +118,8 @@ if (getenv('ENABLE_REDIS')) {
     // being enabled.
     // @see https://github.com/govCMS/scaffold-tooling/issues/30
     // phpcs:ignore Drupal.NamingConventions.ValidGlobal.GlobalUnderScore
-    global $class_loader;
+    // global $class_loader;
+    $class_loader = '/app/vendor/autoload.php';
     $class_loader->addPsr4('Drupal\\redis\\', 'modules/contrib/redis/src');
 
     // Use redis for container cache.
