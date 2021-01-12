@@ -87,7 +87,11 @@ if (getenv('ENABLE_REDIS')) {
       throw new \Exception('Drupal installation underway.');
     }
 
-    $redis->connect($redis_host, $redis_port, $redis_timeout);
+    # Use a timeout to ensure that if Redis is down, that Drupal will
+    # continue to function.
+    if ($redis->connect($redis_host, $redis_port, 1) === FALSE) {
+      throw new \Exception('Redis server unreachable.');
+    }
     $response = $redis->ping();
     if (strpos($response, 'PONG') === FALSE) {
       throw new \Exception('Redis could be reached but is not responding correctly.');
