@@ -184,3 +184,6 @@ deploy:
   script:
     - echo "Deployment triggered, please see $GOVCMS_DASHBOARD/$CI_PROJECT_NAME/$CI_PROJECT_NAME-$(echo $CI_COMMIT_REF_NAME | sed -e 's/[^[:alnum:]-]/-/g')"
   stage: deploy
+  except:
+    variables:
+      - $COMPOSER_UPDATE_FROM_API == "true"
