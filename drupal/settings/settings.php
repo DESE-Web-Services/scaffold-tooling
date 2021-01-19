@@ -68,6 +68,11 @@ if (getenv('LAGOON_ENVIRONMENT_TYPE') && getenv('LAGOON_ENVIRONMENT_TYPE') == 'p
   include $govcms_includes . '/production.settings.php';
 }
 
+// Import settings for all non-production environments
+if (getenv('LAGOON_ENVIRONMENT_TYPE') && getenv('LAGOON_ENVIRONMENT_TYPE') != 'production') {
+  include $govcms_includes .'/not-production.settings.php';
+}
+
 if (getenv('DEV_MODE') && getenv('DEV_MODE') == 'true') {
   include $govcms_includes . '/development.settings.php';
 }
