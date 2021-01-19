@@ -5,15 +5,11 @@
     "repositories": [
         {   "type": "composer",
             "url": "https://repo.packagist.com/empdev/d8/"
-        },
-        {
-            "type" :  "path",
-            "url" : "local/clamav/"
         }
-
     ],
     "require": {
         "dealerdirect/phpcodesniffer-composer-installer": "0.7.0",
+        "drupal/clamav": "2.0.0",
         "drupal/coder": "8.3.x-dev",
         "drupal/drupal-extension": "4.1.0",
         "drupal/lagoon_logs": "1.x-dev",
