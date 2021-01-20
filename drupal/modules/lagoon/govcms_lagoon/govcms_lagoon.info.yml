@@ -7,7 +7,6 @@ core: 8.x
 
 dependencies:
   - redis:redis
-  - fast404:fast404
   - clamav:clamav
   - robotstxt:robotstxt
   - lagoon_logs:lagoon_logs
