@@ -1,7 +1,7 @@
 ---
-image: docker.io/grahamethompson/deptcms-ci:php7.3
+image: gitlab-registry-production.govcms.amazee.io/govcms/govcms-ci${GOVCMS_CI_IMAGE_VERSION}
 services:
-  - "docker:dind"
+  - gitlab-registry-production.govcms.amazee.io/govcms/govcms-ci/dind:latest
 stages:
   - static
   - preflight
@@ -15,7 +15,7 @@ variables:
 # Test setups.
 #
 
-# Minimal setup without docker, tooling available by default is https://github.com/govCMS/govcms- ci.
+# Minimal setup without docker, tooling available by default is https://github.com/govCMS/govcms-ci.
 .static_template: &static_template
   before_script:
     - composer install
@@ -53,6 +53,9 @@ variables:
     - |
       docker network prune -f && docker network create amazeeio-network
       docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+
+      # Some local overrides are prefixed with '###' and we remove them here.
+      sed -i -e "/###/d" docker-compose.yml
 
       docker-compose up -d mariadb
       docker-compose up -d
@@ -100,7 +103,6 @@ vet:
     - composer validate
     - ./vendor/bin/govcms-vet
   when: on_success
-  allow_failure: false
 
 lint:
   <<: *static_template
@@ -159,16 +161,16 @@ audit_on_merge:
 # TODO: create merge request to assist developers review updates.
 composer_update:
   script:
-      - composer update --no-interaction --no-suggest
-      - git status
-      - git config --global user.email "webservices@dese.gov.au"
-      - git config --global user.name "Webservices bot"
-      - git remote set-url origin https://webservices:${K8S_SECRET_GITBOT_TOKEN}@projects.govcms.gov.au/$CI_PROJECT_PATH.git 
-      - CORE_VERSION=`composer show 'drupal/core' | grep 'versions' | grep -o -E '\*\ .+' | cut -d' ' -f2 | cut -d',' -f1`
-      - git checkout -b feature/core-update-${CORE_VERSION}
-      - git add composer.lock
-      - git commit -a -m "Use ${CI_PROJECT_NAME} artifacts from pipeline ${CI_PIPELINE_ID} using Drupal core version ${CORE_VERSION}"
-      - git push --set-upstream origin feature/core-update-${CORE_VERSION}
+    - composer update --no-interaction --no-suggest
+    - git status
+    - git config --global user.email "webservices@dese.gov.au"
+    - git config --global user.name "Webservices bot"
+    - git remote set-url origin https://webservices:${K8S_SECRET_GITBOT_TOKEN}@projects.govcms.gov.au/$CI_PROJECT_PATH.git
+    - CORE_VERSION=`composer show 'drupal/core' | grep 'versions' | grep -o -E '\*\ .+' | cut -d' ' -f2 | cut -d',' -f1`
+    - git checkout -b feature/core-update-${CORE_VERSION}
+    - git add composer.lock
+    - git commit -a -m "Use ${CI_PROJECT_NAME} artifacts from pipeline ${CI_PIPELINE_ID} using Drupal core version ${CORE_VERSION}"
+    - git push --set-upstream origin feature/core-update-${CORE_VERSION}
   only:
     variables:
       - $COMPOSER_UPDATE_FROM_API == "true"
