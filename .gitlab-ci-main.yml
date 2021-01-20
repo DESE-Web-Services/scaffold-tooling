@@ -1,5 +1,5 @@
 ---
-image: docker.io/govcms/govcms-ci
+image: docker.io/grahamethompson/deptcms-ci:php7.3
 services:
   - "docker:dind"
 stages:
@@ -93,9 +93,6 @@ variables:
 # NOTICE: By default, this job must always run because it's a platform
 # compliance check. It should be "allow_failure: false" and
 # it should not use "extends:". PaaS users can override (docs link).
-#
-# "allow_failure: true" because php7.4 upgrade breaks tests
-# https://github.com/govCMS/govcms-ci/commit/568ed17abd1029015e87038dd9c98d8a206248b0
 vet:
   <<: *static_template
   stage: static
@@ -103,7 +100,7 @@ vet:
     - composer validate
     - ./vendor/bin/govcms-vet
   when: on_success
-  allow_failure: true
+  allow_failure: false
 
 lint:
   <<: *static_template
@@ -158,6 +155,25 @@ audit_on_merge:
     - merge_requests
   stage: deploy
 
+# Update composer dependencies - usually used to apply core patches.
+# TODO: create merge request to assist developers review updates.
+composer_update:
+  script:
+      - composer update --no-interaction --no-suggest
+      - git status
+      - git config --global user.email "webservices@dese.gov.au"
+      - git config --global user.name "Webservices bot"
+      - git remote set-url origin https://webservices:${K8S_SECRET_GITBOT_TOKEN}@projects.govcms.gov.au/$CI_PROJECT_PATH.git 
+      - CORE_VERSION=`composer show 'drupal/core' | grep 'versions' | grep -o -E '\*\ .+' | cut -d' ' -f2 | cut -d',' -f1`
+      - git checkout -b feature/core-update-${CORE_VERSION}
+      - git add composer.lock
+      - git commit -a -m "Use ${CI_PROJECT_NAME} artifacts from pipeline ${CI_PIPELINE_ID} using Drupal core version ${CORE_VERSION}"
+      - git push --set-upstream origin feature/core-update-${CORE_VERSION}
+  only:
+    variables:
+      - $COMPOSER_UPDATE_FROM_API == "true"
+  stage: deploy
+
 # Deploy / summary.
 deploy:
   variables:
@@ -165,3 +181,6 @@ deploy:
   script:
     - echo "Deployment triggered, please see $GOVCMS_DASHBOARD/$CI_PROJECT_NAME/$CI_PROJECT_NAME-$(echo $CI_COMMIT_REF_NAME | sed -e 's/[^[:alnum:]-]/-/g')"
   stage: deploy
+  except:
+    variables:
+      - $COMPOSER_UPDATE_FROM_API == "true"
