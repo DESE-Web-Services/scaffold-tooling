@@ -2,6 +2,11 @@
 
 set -e
 
-bats ./tests/bats
-bats ./tests/bats/settings
-bats ./tests/bats/deploy
+targets=()
+while IFS=  read -r -d $'\0'; do
+    targets+=("$REPLY")
+done < <(find tests/bats -type f -name "*.bats"  -print0)
+
+for file in "${targets[@]}"; do
+  [ -f "${file}" ] && bats "${file}"
+done;

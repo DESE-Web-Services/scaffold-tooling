@@ -9,7 +9,13 @@
  * Include development services yml.
  */
 
-// Corresponding services.yml.
+// See comment in all.settings.php.
+// phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
+$govcms_includes = isset($govcms_includes) ? $govcms_includes : __DIR__;
+
+/**
+ * Include the corresponding *.services.yml.
+ */
 // phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
 $settings['container_yamls'][] = $govcms_includes . '/development.services.yml';
 
@@ -30,6 +36,21 @@ $config['google_analytics.settings']['account'] = 'UA-XXXXXXXX-YY';
  * Set expiration of cached pages to 0.
  */
 $config['system.performance']['cache']['page']['max_age'] = 0;
+
+/**
+ * Disable Akamai purging.
+ */
+$config['akamai.settings']['disabled'] = TRUE;
+
+/**
+ * Set dummy Key values in place of missing env variables.
+ */
+$config['key.key.akamai_access_token']['key_provider'] = 'config';
+$config['key.key.akamai_access_token']['key_provider_settings']['key_value'] = '1';
+$config['key.key.akamai_client_token']['key_provider'] = 'config';
+$config['key.key.akamai_client_token']['key_provider_settings']['key_value'] = '1';
+$config['key.key.akamai_client_secret']['key_provider'] = 'config';
+$config['key.key.akamai_client_secret']['key_provider_settings']['key_value'] = '1';
 
 /**
  * Disable CSS and JS aggregation.
