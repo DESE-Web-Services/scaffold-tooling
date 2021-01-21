@@ -169,6 +169,7 @@ composer_update:
     - CORE_VERSION=`composer show 'drupal/core' | grep 'versions' | grep -o -E '\*\ .+' | cut -d' ' -f2 | cut -d',' -f1`
     - git checkout -b feature/core-update-${CORE_VERSION}
     - git add composer.lock
+    - git checkout .
     - git commit -a -m "Use ${CI_PROJECT_NAME} artifacts from pipeline ${CI_PIPELINE_ID} using Drupal core version ${CORE_VERSION}"
     - git push --set-upstream origin feature/core-update-${CORE_VERSION}
   only:
