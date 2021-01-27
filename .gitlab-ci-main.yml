@@ -184,10 +184,10 @@ composer_update:
       - echo "$CI_API_V4_URL"
       - | 
         curl \
-          --location --request POST '$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests' \
-          --header 'PRIVATE-TOKEN: ${K8S_SECRET_ACCESS_TOKEN}' --form 'source_branch="feature/core-update-$CORE_VERSION"' \
+          --location --request POST "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests" \
+          --header "PRIVATE-TOKEN: ${K8S_SECRET_ACCESS_TOKEN}" --form "source_branch=\"feature/core-update-$CORE_VERSION\"" \
           --form 'target_branch="master"' \
-          --form 'title="Use ${CI_PROJECT_NAME} artifacts from pipeline ${CI_PIPELINE_ID} using Drupal core version ${CORE_VERSION}."'
+          --form "title=\"Use ${CI_PROJECT_NAME} artifacts from pipeline ${CI_PIPELINE_ID} using Drupal core version ${CORE_VERSION}.\""
   only:
     variables:
       - $COMPOSER_UPDATE_FROM_API == "true"
