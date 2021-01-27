@@ -20,7 +20,10 @@ variables:
   before_script:
     - composer install
   stage: static
-
+  except:
+    variables:
+      - $COMPOSER_UPDATE_FROM_API == "true"
+      
 # Minimal setup to execute drush against a working Drupal.
 .bootstrap_template: &bootstrap_template
   before_script:
@@ -41,7 +44,10 @@ variables:
       echo "Running govcms-deploy."
       docker-compose exec -T cli ./vendor/bin/govcms-deploy
   stage: preflight
-
+  except:
+    variables:
+      - $COMPOSER_UPDATE_FROM_API == "true"
+      
 # Setup the full working project for integration tests like Behat.
 .full_template: &full_template
   artifacts:
@@ -85,7 +91,10 @@ variables:
       echo "Running govcms-deploy."
       docker-compose exec -T cli ./vendor/bin/govcms-deploy
       docker-compose exec -T cli bash -c 'drush status'
-
+  except:
+    variables:
+      - $COMPOSER_UPDATE_FROM_API == "true"
+      
 ##
 # Job definitions.
 #
