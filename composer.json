@@ -15,8 +15,8 @@
         "drupal/redis":"1.4",
         "drupal/stage_file_proxy":"^1",
         "drush/drush": "^10",
-        "phar-io/manifest": "1.0.1",
-        "phar-io/version": "1.0.1",
+        "phar-io/manifest": "^2",
+        "phar-io/version": "^3",
         "webflo/drupal-finder": "1.2",
         "webmozart/path-util": "2.3",
         "zaporylie/composer-drupal-optimizations": "^1.0"
