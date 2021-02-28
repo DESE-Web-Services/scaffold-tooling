@@ -68,7 +68,7 @@ array_walk($varnish_hosts, function (&$value, $key) use ($varnish_control_port) 
 
 $settings['reverse_proxy'] = TRUE;
 $settings['reverse_proxy_addresses'] = array_merge(explode(',', getenv('VARNISH_HOSTS')), ['varnish']);
-$settings['varnish_control_terminal'] = implode($varnish_hosts, " ");
+$settings['varnish_control_terminal'] = implode(" ", $varnish_hosts);
 $settings['varnish_control_key'] = getenv('VARNISH_SECRET') ?: 'lagoon_default_secret';
 $settings['varnish_version'] = 4;
 
@@ -76,7 +76,7 @@ $settings['varnish_version'] = 4;
 if (getenv('ENABLE_REDIS')) {
   $redis = new \Redis();
   $redis_host = getenv('REDIS_HOST') ?: 'redis';
-  $redis_port = getenv('REDIS_PORT') ?: 6379;
+  $redis_port = getenv('REDIS_SERVICE_PORT') ?: 6379;
   // Redis should return in < 1s so this is a maximum time
   // to ensure we don't hold the proc forever.
   $redis_timeout = getenv('REDIS_CONNECT_TIMEOUT') ?: 2;
@@ -87,7 +87,11 @@ if (getenv('ENABLE_REDIS')) {
       throw new \Exception('Drupal installation underway.');
     }
 
-    $redis->connect($redis_host, $redis_port, $redis_timeout);
+    # Use a timeout to ensure that if Redis is down, that Drupal will
+    # continue to function.
+    if ($redis->connect($redis_host, $redis_port, 1) === FALSE) {
+      throw new \Exception('Redis server unreachable.');
+    }
     $response = $redis->ping();
     if (strpos($response, 'PONG') === FALSE) {
       throw new \Exception('Redis could be reached but is not responding correctly.');
@@ -114,7 +118,6 @@ if (getenv('ENABLE_REDIS')) {
     // being enabled.
     // @see https://github.com/govCMS/scaffold-tooling/issues/30
     // phpcs:ignore Drupal.NamingConventions.ValidGlobal.GlobalUnderScore
-    global $class_loader;
     $class_loader->addPsr4('Drupal\\redis\\', 'modules/contrib/redis/src');
 
     // Use redis for container cache.

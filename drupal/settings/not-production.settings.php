@@ -2,22 +2,12 @@
 
 /**
  * @file
- * Non-production settings. Included from settings.php.
- */
-
-/**
- * Include development services yml.
+ * Non-production settings. Included from settings.php (all.settings.php for now).
  */
 
 // See comment in all.settings.php.
 // phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
 $govcms_includes = isset($govcms_includes) ? $govcms_includes : __DIR__;
-
-/**
- * Include the corresponding *.services.yml.
- */
-// phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
-$settings['container_yamls'][] = $govcms_includes . '/development.services.yml';
 
 /**
  * Show all error messages, with backtrace information.
@@ -33,11 +23,6 @@ $config['system.logging']['error_level'] = 'verbose';
 $config['google_analytics.settings']['account'] = 'UA-XXXXXXXX-YY';
 
 /**
- * Set expiration of cached pages to 0.
- */
-$config['system.performance']['cache']['page']['max_age'] = 0;
-
-/**
  * Disable Akamai purging.
  */
 $config['akamai.settings']['disabled'] = TRUE;
@@ -51,18 +36,6 @@ $config['key.key.akamai_client_token']['key_provider'] = 'config';
 $config['key.key.akamai_client_token']['key_provider_settings']['key_value'] = '1';
 $config['key.key.akamai_client_secret']['key_provider'] = 'config';
 $config['key.key.akamai_client_secret']['key_provider_settings']['key_value'] = '1';
-
-/**
- * Disable CSS and JS aggregation.
- */
-$config['system.performance']['css']['preprocess'] = FALSE;
-$config['system.performance']['js']['preprocess'] = FALSE;
-
-/**
- * Disable render caches for twig files to be reloaded on every page view.
- */
-$settings['cache']['bins']['render'] = 'cache.backend.null';
-$settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.null';
 
 // Stage file proxy.
 if (getenv('STAGE_FILE_PROXY_URL')) {

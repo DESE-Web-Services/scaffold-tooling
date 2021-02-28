@@ -148,3 +148,7 @@ if (getenv('SMTP_USERNAME') AND getenv('SMTP_PASSWORD')) {
   $config['smtp.settings']['smtp_password'] = getenv('SMTP_PASSWORD');
 }
 
+// Import settings for all non-production environments (temp solution)
+if (getenv('LAGOON_ENVIRONMENT_TYPE') && getenv('LAGOON_ENVIRONMENT_TYPE') != 'production') {
+  include $govcms_includes .'/not-production.settings.php';
+}
