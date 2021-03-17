@@ -1,7 +1,8 @@
 ---
-image: docker.io/grahamethompson/deptcms-ci:php7.3
+image: gitlab-registry-production.govcms.amazee.io/govcms/govcms-ci${GOVCMS_CI_IMAGE_VERSION}
 services:
-  - "docker:dind"
+  - name: gitlab-registry-production.govcms.amazee.io/govcms/govcms-ci/dind:latest
+    command: ["--tls=false"]
 stages:
   - static
   - preflight
@@ -15,7 +16,7 @@ variables:
 # Test setups.
 #
 
-# Minimal setup without docker, tooling available by default is https://github.com/govCMS/govcms- ci.
+# Minimal setup without docker, tooling available by default is https://github.com/govCMS/govcms-ci.
 .static_template: &static_template
   before_script:
     - composer install
@@ -27,6 +28,7 @@ variables:
     - |
       docker network prune -f && docker network create amazeeio-network
       docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+      docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_TOKEN
 
       # Some local overrides are prefixed with '###' and we remove them here.
       sed -i -e "/###/d" docker-compose.yml
@@ -53,10 +55,10 @@ variables:
     - |
       docker network prune -f && docker network create amazeeio-network
       docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-      
+
       # Some local overrides are prefixed with '###' and we remove them here.
       sed -i -e "/###/d" docker-compose.yml
-      
+
       docker-compose up -d mariadb
       docker-compose up -d
       docker-compose ps
@@ -103,7 +105,6 @@ vet:
     - composer validate
     - ./vendor/bin/govcms-vet
   when: on_success
-  allow_failure: false
 
 lint:
   <<: *static_template
@@ -158,6 +159,33 @@ audit_on_merge:
     - merge_requests
   stage: deploy
 
+# Update composer dependencies - usually used to apply core patches.
+composer_update:
+  script:
+      - composer update "${COMPOSER_UPDATE_PACKAGE:-}" --no-interaction --no-suggest
+      - git status
+      - git config --global user.email "webservices@dese.gov.au"
+      - git config --global user.name "Webservices bot"
+      - git remote set-url origin https://webservices:${K8S_SECRET_GITBOT_TOKEN}@projects.govcms.gov.au/$CI_PROJECT_PATH.git 
+      - CORE_VERSION=`composer show 'drupal/core' | grep 'versions' | grep -o -E '\*\ .+' | cut -d' ' -f2 | cut -d',' -f1`
+      - git checkout -b feature/core-update-${CORE_VERSION}
+      - git add composer.lock
+      - git checkout .
+      - git commit -a -m "Use ${CI_PROJECT_NAME} artifacts from pipeline ${CI_PIPELINE_ID} using Drupal core version ${CORE_VERSION}"
+      - git push --set-upstream origin feature/core-update-${CORE_VERSION}
+      - echo "$CI_PROJECT_ID"
+      - echo "$CI_API_V4_URL"
+      - | 
+        curl \
+          --location --request POST "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests" \
+          --header "PRIVATE-TOKEN: ${K8S_SECRET_ACCESS_TOKEN}" --form "source_branch=\"feature/core-update-$CORE_VERSION\"" \
+          --form 'target_branch="master"' \
+          --form "title=\"Use ${CI_PROJECT_NAME} artifacts from pipeline ${CI_PIPELINE_ID} using Drupal core version ${CORE_VERSION}.\""
+  only:
+    variables:
+      - $COMPOSER_UPDATE_FROM_API == "true"
+  stage: deploy
+
 # Deploy / summary.
 deploy:
   variables:
@@ -165,3 +193,6 @@ deploy:
   script:
     - echo "Deployment triggered, please see $GOVCMS_DASHBOARD/$CI_PROJECT_NAME/$CI_PROJECT_NAME-$(echo $CI_COMMIT_REF_NAME | sed -e 's/[^[:alnum:]-]/-/g')"
   stage: deploy
+  except:
+    variables:
+      - $COMPOSER_UPDATE_FROM_API == "true"
