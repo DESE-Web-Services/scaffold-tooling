@@ -1,7 +1,8 @@
 ---
-image: gitlab-registry-production.govcms.amazee.io/govcms/govcms-ci${GOVCMS_CI_IMAGE_VERSION}
+image: grahamethompson/deptcms-ci:php7.4-composer-2
 services:
-  - gitlab-registry-production.govcms.amazee.io/govcms/govcms-ci/dind:latest
+  - name: gitlab-registry-production.govcms.amazee.io/govcms/govcms-ci/dind:latest
+    command: ["--tls=false"]
 stages:
   - static
   - preflight
