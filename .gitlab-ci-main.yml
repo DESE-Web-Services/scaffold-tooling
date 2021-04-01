@@ -1,5 +1,5 @@
 ---
-image: grahamethompson/deptcms-ci:php7.4-composer-2
+image: gitlab-registry-production.govcms.amazee.io/govcms/govcms-ci${GOVCMS_CI_IMAGE_VERSION}
 services:
   - name: gitlab-registry-production.govcms.amazee.io/govcms/govcms-ci/dind:latest
     command: ["--tls=false"]
@@ -19,6 +19,7 @@ variables:
 # Minimal setup without docker, tooling available by default is https://github.com/govCMS/govcms-ci.
 .static_template: &static_template
   before_script:
+    - composer self-update --2
     - composer install
   stage: static
 
@@ -35,6 +36,8 @@ variables:
       docker-compose up -d mariadb
       docker-compose up -d cli
       docker-compose ps
+      
+      docker-compose exec -T cli bash -c 'composer self-update --2'
 
       # Re-run composer to account for the fact the /app just got mounted over.
       docker-compose exec -T cli bash -c 'composer install --no-interaction --no-suggest'
@@ -61,6 +64,8 @@ variables:
       docker-compose up -d mariadb
       docker-compose up -d
       docker-compose ps
+
+      docker-compose exec -T cli bash -c 'composer self-update --2'
 
       # Re-run composer to account for the fact the /app just got mounted over.
       docker-compose exec -T cli bash -c 'composer install --no-interaction --no-suggest'
