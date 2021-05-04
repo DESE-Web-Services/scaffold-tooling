@@ -1,0 +1,22 @@
+version: 2
+registries:
+  git-bitbucket-org:
+    type: git
+    url: https://bitbucket.org
+    username: ""
+    password: "${{secrets.GIT_BITBUCKET_ORG_PASSWORD}}"
+  git-repo-packagist-com:
+    type: git
+    url: https://repo.packagist.com
+    username: token
+    password: "${{secrets.GIT_REPO_PACKAGIST_COM_PASSWORD}}"
+
+updates:
+- package-ecosystem: composer
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  registries:
+  - git-bitbucket-org
+  - git-repo-packagist-com
