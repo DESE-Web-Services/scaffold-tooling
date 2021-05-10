@@ -8,7 +8,7 @@
  * all environments.
  */
 
-// phpcs:disable Drupal.Classes.ClassFileName.NoMatch
+// phpcs:disable Drupal.Classes.ClassFileName.NoMatch,Drupal.Commenting.ClassComment.Short
 
 // This variable may be set from settings.php. Fallback to current directory.
 // @see https://github.com/govCMS/govcms8-scaffold-paas/blob/57cddd8/web/sites/default/settings.php#L48
@@ -23,6 +23,8 @@ $settings['container_yamls'][] = $govcms_includes . '/all.services.yml';
 
 // Drupal 8 config.
 $config_directories[CONFIG_SYNC_DIRECTORY] = '../config/default';
+// Drupal 8 (only) partial overrides.
+$config_directories['dev'] = '../config/dev';
 // Drupal 9 ready.
 $settings['config_sync_directory'] = '../config/default';
 
@@ -110,8 +112,19 @@ $settings['redirect_page_cache'] = TRUE;
 // Ensure that administrators do not block drush access through the UI.
 $config['shield.settings']['allow_cli'] = TRUE;
 
-// Enforce correct solr server configuration (GOVCMS-4634).
-// Fix for 8.5.0 and the solr upgrade.
+// Allow projects to increase the HTTP client timeout for CLI requests.
+// This will impact migrations that rely on external services and other
+// HTTP requests that the Drupal request library makes.
+//
+// This has only been added to affect CLI because this timeout can hold
+// PHP processes if a remote request is unavailable, as sites can do
+// inline HTTP requests this is a performance risk.
+if (defined('STDIN') || in_array(PHP_SAPI, ['cli', 'cli-server'])) {
+  if (is_numeric($http_client_timeout = getenv('GOVCMS_HTTP_CLIENT_TIMEOUT'))) {
+    $settings['http_client_config']['timeout'] = $http_client_timeout;
+  }
+}
+
 $config['search_api.server.lagoon_solr']['backend_config']['connector_config']['path'] = '/';
 $config['search_api.server.lagoon_solr']['backend_config']['connector_config']['core'] = 'drupal';
 

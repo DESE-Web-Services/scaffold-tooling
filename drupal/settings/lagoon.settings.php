@@ -8,6 +8,10 @@
  * the platform.).
  */
 
+use Drupal\Core\Installer\InstallerKernel;
+
+// phpcs:disable Drupal.Classes.UseGlobalClass.RedundantUseStatement
+
 // See comment in all.settings.php.
 // phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
 $govcms_includes = isset($govcms_includes) ? $govcms_includes : __DIR__;
@@ -46,8 +50,6 @@ if (getenv('MARIADB_READREPLICA_HOSTS')) {
     foreach ($replica_hosts as $replica_host) {
       // Add replica support to the default database connection. This allows
       // services to use the database.replica service for particular operations.
-      // @TODO: Lagoon should expose MARAIDB replica hosts as an array so we can
-      // scale the replicas horizontally.
       $databases['default']['replica'][] = array_merge($db_conf, [
         'host' => $replica_host,
       ]);
@@ -55,15 +57,10 @@ if (getenv('MARIADB_READREPLICA_HOSTS')) {
   }
 }
 
-// Lagoon Solr connection.
-$config['search_api.server']['backend_config']['connector_config']['host'] = getenv('SOLR_HOST') ?: 'solr';
-$config['search_api.server']['backend_config']['connector_config']['path'] = '/solr/' . getenv('SOLR_CORE') ?: 'drupal';
-
 // Lagoon Varnish & reverse proxy settings.
-$varnish_control_port = getenv('VARNISH_CONTROL_PORT') ?: '6082';
 $varnish_hosts = explode(',', getenv('VARNISH_HOSTS') ?: 'varnish');
-array_walk($varnish_hosts, function (&$value, $key) use ($varnish_control_port) {
-  $value .= ":$varnish_control_port";
+array_walk($varnish_hosts, function (&$value, $key) {
+  $value .= ':' . getenv('VARNISH_CONTROL_PORT') ?: '6082';
 });
 
 $settings['reverse_proxy'] = TRUE;
@@ -82,7 +79,7 @@ if (getenv('ENABLE_REDIS')) {
   $redis_timeout = getenv('REDIS_CONNECT_TIMEOUT') ?: 2;
 
   try {
-    if (drupal_installation_attempted()) {
+    if (InstallerKernel::installationAttempted()) {
       // Do not set the cache during installations of Drupal.
       throw new \Exception('Drupal installation underway.');
     }
