@@ -162,6 +162,7 @@ audit_on_merge:
 # Update composer dependencies - usually used to apply core patches.
 composer_update:
   script:
+      - composer clearcache
       - composer update "${COMPOSER_UPDATE_PACKAGE:-}" --no-interaction --no-suggest
       - git status
       - git config --global user.email "webservices@dese.gov.au"
