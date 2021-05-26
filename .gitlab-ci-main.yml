@@ -105,7 +105,10 @@ vet:
     - composer validate
     - ./vendor/bin/govcms-vet
   when: on_success
-
+  except:
+    variables:
+      - $COMPOSER_UPDATE_FROM_API == "true"
+      
 lint:
   <<: *static_template
   extends: .job-lint
@@ -115,7 +118,10 @@ lint:
       set +exuo pipefail # Linting...
       ./vendor/bin/govcms-lint web/modules/custom
       ./vendor/bin/govcms-lint web/themes/custom
-
+  except:
+    variables:
+      - $COMPOSER_UPDATE_FROM_API == "true"
+      
 unit:
   <<: *static_template
   extends: .job-unit
@@ -131,7 +137,10 @@ preflight:
     - docker-compose exec -T cli bash -c 'drush cim -y'
     - docker-compose exec -T cli bash -c 'drush st'
     - docker-compose exec -T cli bash -c 'drush updatedb:status'
-
+  except:
+    variables:
+      - $COMPOSER_UPDATE_FROM_API == "true"
+      
 # Integration.
 behat:
   <<: *full_template
