@@ -41,3 +41,9 @@ elseif (getenv('LAGOON_PROJECT')) {
 $config['environment_indicator.indicator']['bg_color'] = '#006600';
 $config['environment_indicator.indicator']['fg_color'] = '#FFFFFF';
 $config['environment_indicator.indicator']['name'] = 'Non-production';
+
+// Disable shield on development environment.
+if (getenv('DISABLE_SHIELD') === 'true') {
+  $config['shield.settings']['credentials']['shield']['user'] = NULL;
+  $config['shield.settings']['credentials']['shield']['pass'] = NULL;
+}
