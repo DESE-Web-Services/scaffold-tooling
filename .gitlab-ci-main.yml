@@ -1,10 +1,8 @@
 ---
 image: gitlab-registry-production.govcms.amazee.io/govcms/govcms-ci${GOVCMS_CI_IMAGE_VERSION}
-
 services:
   - name: gitlab-registry-production.govcms.amazee.io/govcms/govcms-ci/dind:latest
     command: ["--tls=false"]
-
 stages:
   - static
   - preflight
@@ -13,6 +11,7 @@ stages:
 variables:
   extends: .variables
   DOCKER_HOST: "tcp://localhost:2375"
+  COMPOSER_VERSION: --2
 
 ##
 # Test setups.
@@ -21,6 +20,7 @@ variables:
 # Minimal setup without docker, tooling available by default is https://github.com/govCMS/govcms-ci.
 .static_template: &static_template
   before_script:
+    - composer self-update $COMPOSER_VERSION
     - composer install
   stage: static
 
@@ -38,6 +38,9 @@ variables:
       docker-compose up -d mariadb
       docker-compose up -d cli
       docker-compose ps
+
+      # Ensure correct composer version
+      docker-compose exec -T cli bash -c 'composer self-update $COMPOSER_VERSION'
 
       # Re-run composer to account for the fact the /app just got mounted over.
       docker-compose exec -T cli bash -c 'composer install --no-interaction --no-suggest'
@@ -65,6 +68,9 @@ variables:
       docker-compose up -d mariadb
       docker-compose up -d
       docker-compose ps
+
+      # Ensure correct composer version
+      docker-compose exec -T cli bash -c 'composer self-update $COMPOSER_VERSION'
 
       # Re-run composer to account for the fact the /app just got mounted over.
       docker-compose exec -T cli bash -c 'composer install --no-interaction --no-suggest'
@@ -179,7 +185,7 @@ composer_update:
       - git push --set-upstream origin feature/core-update-${CORE_VERSION}
       - echo "$CI_PROJECT_ID"
       - echo "$CI_API_V4_URL"
-      - | 
+      - |
         curl \
           --location --request POST "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests" \
           --header "PRIVATE-TOKEN: ${K8S_SECRET_ACCESS_TOKEN}" --form "source_branch=\"feature/core-update-$CORE_VERSION\"" \
