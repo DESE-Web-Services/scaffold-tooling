@@ -70,7 +70,7 @@ variables:
       docker-compose ps
 
       # Ensure correct composer version
-      docker-compose exec -T cli bash -c 'composer self-update $COMPOSER_VERSION'
+      docker-compose exec -T cli bash -c 'composer self-update "${COMPOSER_VERSION}"'
 
       # Re-run composer to account for the fact the /app just got mounted over.
       docker-compose exec -T cli bash -c 'composer install --no-interaction --no-suggest'
