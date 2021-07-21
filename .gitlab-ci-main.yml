@@ -172,6 +172,7 @@ audit_on_merge:
 # Update composer dependencies - usually used to apply core patches.
 composer_update:
   script:
+      - composer clearcache
       - composer self-update $COMPOSER_VERSION
       - composer update "${COMPOSER_UPDATE_PACKAGE:-}" --no-interaction --no-suggest
       - git status
