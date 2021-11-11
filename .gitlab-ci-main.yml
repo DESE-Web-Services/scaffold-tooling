@@ -142,6 +142,7 @@ preflight:
   <<: *bootstrap_template
   extends: .job-preflight
   stage: preflight
+  allow_failure: false
   script:
     - docker-compose exec -T cli bash -c 'drush cim -y'
     - docker-compose exec -T cli bash -c 'drush st'
