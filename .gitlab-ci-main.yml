@@ -45,8 +45,6 @@ variables:
       # Re-run composer to account for the fact the /app just got mounted over.
       docker-compose exec -T cli bash -c 'composer install --no-interaction --no-suggest'
 
-      echo "Running govcms-deploy."
-      docker-compose exec -T cli ./vendor/bin/govcms-deploy
   stage: preflight
 
 # Setup the full working project for integration tests like Behat.
@@ -144,7 +142,8 @@ preflight:
   stage: preflight
   allow_failure: false
   script:
-    - docker-compose exec -T cli bash -c 'drush cim -y'
+    - echo "Running govcms-deploy."
+    - docker-compose exec -T cli ./vendor/bin/govcms-deploy
     - docker-compose exec -T cli bash -c 'drush st'
     - docker-compose exec -T cli bash -c 'drush updatedb:status'
   except:
