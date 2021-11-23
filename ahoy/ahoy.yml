@@ -61,7 +61,7 @@ commands:
 
   login:
     usage: Login to a website.
-    cmd: docker-compose exec -T cli drush uli "$@"
+    cmd: '[ "$#" -eq 0 ] && docker-compose exec -T cli drush uli || docker-compose exec -T cli drush uli --name="$@"'
 
   mysql-import:
     usage: Pipe in a sql file.  `ahoy mysql-import local.sql`
