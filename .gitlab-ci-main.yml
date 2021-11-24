@@ -199,7 +199,7 @@ composer_update:
       - |
         curl \
           --location --request POST "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests" \
-          --header "PRIVATE-TOKEN: ${K8S_SECRET_ACCESS_TOKEN}" --form "source_branch=\"$CORE_VERSION\"" \
+          --header "PRIVATE-TOKEN: ${K8S_SECRET_ACCESS_TOKEN}" --form "source_branch=\"$DESTINATION_BRANCH_NAME\"" \
           --form 'target_branch="master"' \
           --form "title=\"Use ${CI_PROJECT_NAME} artifacts from pipeline ${CI_PIPELINE_ID} using Drupal core version ${CORE_VERSION}.\""
   only:
