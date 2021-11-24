@@ -182,7 +182,7 @@ composer_update:
   script:
       - composer clearcache
       - composer self-update $COMPOSER_VERSION
-      - composer update "${COMPOSER_UPDATE_PACKAGE:-}" --no-interaction --no-suggest
+      - composer update ${COMPOSER_UPDATE_PACKAGE:-} --no-interaction --no-suggest
       - git status
       - git config --global user.email "webservices@dese.gov.au"
       - git config --global user.name "Webservices bot"
