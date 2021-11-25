@@ -202,7 +202,8 @@ composer_update:
           --location --request POST "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests" \
           --header "PRIVATE-TOKEN: ${K8S_SECRET_ACCESS_TOKEN}" --form "source_branch=\"$DESTINATION_BRANCH_NAME\"" \
           --form 'target_branch="master"' \
-          --form "title=\"${COMMIT_MESSAGE}\""
+          --form "title=\"${COMMIT_MESSAGE}\"
+          --form "description=\"Composer update on ${COMPOSER_UPDATE_PACKAGE:-all}\""
   only:
     variables:
       - $COMPOSER_UPDATE_FROM_API == "true"
