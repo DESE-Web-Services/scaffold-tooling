@@ -182,25 +182,28 @@ composer_update:
   script:
       - composer clearcache
       - composer self-update $COMPOSER_VERSION
-      - composer update "${COMPOSER_UPDATE_PACKAGE:-}" --no-interaction --no-suggest
+      - composer update ${COMPOSER_UPDATE_PACKAGE:-} --no-interaction --no-suggest
       - git status
       - git config --global user.email "webservices@dese.gov.au"
       - git config --global user.name "Webservices bot"
       - git remote set-url origin https://webservices:${K8S_SECRET_GITBOT_TOKEN}@projects.govcms.gov.au/$CI_PROJECT_PATH.git 
       - CORE_VERSION=`composer show 'drupal/core' | grep 'versions' | grep -o -E '\*\ .+' | cut -d' ' -f2 | cut -d',' -f1`
-      - git checkout -b feature/core-update-${CORE_VERSION}
+      - export DESTINATION_BRANCH_NAME=${OVERRIDE_BRANCH_NAME:-feature/core-update-${CORE_VERSION}}
+      - export COMMIT_MESSAGE=${OVERRIDE_COMMIT_MESSAGE:-Use ${CI_PROJECT_NAME} artifacts from pipeline ${CI_PIPELINE_ID} using Drupal core version ${CORE_VERSION}}
+      - git checkout -b ${DESTINATION_BRANCH_NAME}
       - git add composer.lock
       - git checkout .
-      - git commit -a -m "Use ${CI_PROJECT_NAME} artifacts from pipeline ${CI_PIPELINE_ID} using Drupal core version ${CORE_VERSION}"
-      - git push --set-upstream origin feature/core-update-${CORE_VERSION}
+      - git commit -a -m "${COMMIT_MESSAGE}" -m "Composer update on ${COMPOSER_UPDATE_PACKAGE:-all}"
+      - git push --set-upstream origin $DESTINATION_BRANCH_NAME
       - echo "$CI_PROJECT_ID"
       - echo "$CI_API_V4_URL"
       - |
         curl \
           --location --request POST "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests" \
-          --header "PRIVATE-TOKEN: ${K8S_SECRET_ACCESS_TOKEN}" --form "source_branch=\"feature/core-update-$CORE_VERSION\"" \
+          --header "PRIVATE-TOKEN: ${K8S_SECRET_ACCESS_TOKEN}" --form "source_branch=\"$DESTINATION_BRANCH_NAME\"" \
           --form 'target_branch="master"' \
-          --form "title=\"Use ${CI_PROJECT_NAME} artifacts from pipeline ${CI_PIPELINE_ID} using Drupal core version ${CORE_VERSION}.\""
+          --form "title=\"${COMMIT_MESSAGE}\"" \
+          --form "description=\"Composer update on ${COMPOSER_UPDATE_PACKAGE:-all}\""
   only:
     variables:
       - $COMPOSER_UPDATE_FROM_API == "true"
