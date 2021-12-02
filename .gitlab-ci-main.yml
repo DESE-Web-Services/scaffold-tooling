@@ -186,7 +186,7 @@ composer_update:
       - git status
       - git config --global user.email "webservices@dese.gov.au"
       - git config --global user.name "Webservices bot"
-      - git remote set-url origin https://webservices:${K8S_SECRET_GITBOT_TOKEN}@projects.govcms.gov.au/$CI_PROJECT_PATH.git 
+      - git remote set-url origin https://webservices:${K8S_SECRET_ACCESS_TOKEN}@projects.govcms.gov.au/$CI_PROJECT_PATH.git 
       - CORE_VERSION=`composer show 'drupal/core' | grep 'versions' | grep -o -E '\*\ .+' | cut -d' ' -f2 | cut -d',' -f1`
       - export DESTINATION_BRANCH_NAME=${OVERRIDE_BRANCH_NAME:-feature/core-update-${CORE_VERSION}}
       - export COMMIT_MESSAGE=${OVERRIDE_COMMIT_MESSAGE:-Use ${CI_PROJECT_NAME} artifacts from pipeline ${CI_PIPELINE_ID} using Drupal core version ${CORE_VERSION}}
