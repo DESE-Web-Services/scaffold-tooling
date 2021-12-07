@@ -161,3 +161,8 @@ if (getenv('SMTP_USERNAME') AND getenv('SMTP_PASSWORD')) {
   $config['smtp.settings']['smtp_password'] = getenv('SMTP_PASSWORD');
 }
 
+// Trusted host patterns are not necessary on lagoon as traffic will only
+// be routed to your site via the routes (hosts) defined in .lagoon.yml.
+if (getenv('LAGOON')) {
+    $settings['trusted_host_patterns'][] = '.*';
+}
