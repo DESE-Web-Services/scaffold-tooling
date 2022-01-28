@@ -14,6 +14,11 @@ GOVCMS_DEPLOY_WORKFLOW_CONTENT=${GOVCMS_DEPLOY_WORKFLOW_CONTENT:-retain}
 MARIADB_READREPLICA_HOSTS="${MARIADB_READREPLICA_HOSTS:-}"
 # The location of the application directory.
 APP="${APP:-/app}"
+# Debug deploy script
+ENABLE_SCRIPT_DEBUGGING:"${ENABLE_SCRIPT_DEBUGGING:-}"
+if [[ -z "$ENABLE_SCRIPT_DEBUGGING" ]]; then
+  set -x
+fi
 
 # Check for presence of config files.
 set +e # Prevent script failure when assigning 0.
