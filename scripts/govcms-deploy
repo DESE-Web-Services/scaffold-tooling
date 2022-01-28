@@ -15,7 +15,7 @@ MARIADB_READREPLICA_HOSTS="${MARIADB_READREPLICA_HOSTS:-}"
 # The location of the application directory.
 APP="${APP:-/app}"
 # Debug deploy script
-ENABLE_SCRIPT_DEBUGGING:"${ENABLE_SCRIPT_DEBUGGING:-}"
+ENABLE_SCRIPT_DEBUGGING="${ENABLE_SCRIPT_DEBUGGING:-}"
 if [[ -z "$ENABLE_SCRIPT_DEBUGGING" ]]; then
   set -x
 fi
