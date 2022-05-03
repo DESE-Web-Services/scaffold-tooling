@@ -149,7 +149,8 @@ preflight:
   except:
     variables:
       - $COMPOSER_UPDATE_FROM_API == "true"
-
+      - $SKIP_PREFLIGHT == "true"
+      
 # Integration.
 behat:
   <<: *full_template
