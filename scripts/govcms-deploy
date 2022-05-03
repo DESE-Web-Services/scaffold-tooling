@@ -59,7 +59,7 @@ common_deploy () {
     rm /tmp/sync.sql.gz
   fi
 
-  drush cache:rebuild
+  drush cache:rebuild || true
   drush updatedb -y
 
   # Base configuration import with development environment overrides.
