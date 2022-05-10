@@ -11,6 +11,7 @@ set -euo pipefail
 
 GOVCMS_ROLE_PATTERN=${GOVCMS_ROLE_PATTERN:-user.role.*.yml}
 GOVCMS_FILE_LIST=${GOVCMS_FILE_LIST:-}
+GOVCMS_PREPARE_XML_SCRIPT=${GOVCMS_PREPARE_XML_SCRIPT:-govcms-prepare-xml}
 GOVCMS_OUTFILE=${GOVCMS_OUTFILE:-govcms-validate-permissions}
 
 FAILURES=""
@@ -20,31 +21,66 @@ echo "GovCMS Validate :: Disallowed permissions"
 
 # We will need to export this during automated testing.
 if [ -z "${GOVCMS_FILE_LIST}" ]; then
-  GOVCMS_FILE_LIST=$(find config/default -type f \( -name "$GOVCMS_ROLE_PATTERN" -not -name 'user.role.site_administrator.yml' \))
+  GOVCMS_FILE_LIST=$(find config/default -type f \( -name "$GOVCMS_ROLE_PATTERN" -not -name 'user.role.govcms_site_administrator.yml' \))
+fi
+
+# No configuration files.
+if [ -z "${GOVCMS_FILE_LIST}" ]; then
+  echo "[info]: Configuration files not present."
+  exit 0
 fi
 
 IFS_BAK="$IFS"
 IFS=$'\n'
 
 for file in $GOVCMS_FILE_LIST; do
-    if [ $(cat "$file" | grep -c -e "administer permissions" -e "administer modules" -e "administer software updates" -e "administer site configuration" -e "use PHP for google analytics tracking visibility" -e "import configuration") -ne 0 ]; then
-      echo "[fail]: $file has restricted permissions";
-      FAILURES="$FAILURES,$file"
-      continue
-    fi
-    if [[ $(yq r "$file" 'is_admin') == 'true' ]]; then
-      echo "[fail]: $file is listed as an admin role";
-      FAILURES="$FAILURES,$file"
-      continue
-    fi
-    echo "[info]: $file is valid"
+  FILE_JSON=$(yq read "$file" --tojson)
+  RESTRICTED_PERMS_JSON=$(
+    jq -r 'if (.permissions |
+        index("administer modules") or
+        index("administer permissions") or
+        index("administer site configuration") or
+        index("administer software updates") or
+        index("Administer the list of modules that can be managed by others") or
+        index("import configuration") or
+        index("use PHP for google analytics tracking visibility") or
+        index("synchronize configuration") or
+        index("administer config permissions")
+      )
+      then {
+        role: .id,
+        perms: (.permissions | map(select(. == (
+          "administer modules",
+          "administer permissions",
+          "administer site configuration",
+          "administer software updates",
+          "Administer the list of modules that can be managed by others",
+          "import configuration",
+          "use PHP for google analytics tracking visibility",
+          "synchronize configuration",
+          "administer config permissions"
+        ))))
+      }
+      else empty end' <<< "${FILE_JSON}")
+  RESTRICTED_PERMS=$(jq '.perms | join(",")' <<< "${RESTRICTED_PERMS_JSON}")
+  if [ -n "${RESTRICTED_PERMS}" ]; then
+    echo "[fail]: $file has restricted permissions: $RESTRICTED_PERMS";
+    FAILURES="$FAILURES,$file"
+    continue
+  fi
+  if [[ $(yq r "$file" 'is_admin') == 'true' ]]; then
+    echo "[fail]: $file is listed as an admin role";
+    FAILURES="$FAILURES,$file"
+    continue
+  fi
+  echo "[info]: $file is valid"
 done
 
 IFS=$IFS_BAK
 
-if [ -x govcms-prepare-xml ]; then
+if [ -x "${GOVCMS_PREPARE_XML_SCRIPT}" ]; then
   FILE_LFS=$(join_char , "${GOVCMS_FILE_LIST}")
-  govcms-prepare-xml --failures="${FAILURES}" --total="${FILE_LFS}" --name="${GOVCMS_OUTFILE}" --fail-message="GovCMS.QA.IllegalPermissions"
+  ${GOVCMS_PREPARE_XML_SCRIPT} --failures="${FAILURES}" --total="${FILE_LFS}" --name="${GOVCMS_OUTFILE}" --fail-message="GovCMS.QA.IllegalPermissions"
 fi
 
 if [ -z "${FAILURES}" ]; then

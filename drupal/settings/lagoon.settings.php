@@ -14,7 +14,7 @@ use Drupal\Core\Installer\InstallerKernel;
 
 // See comment in all.settings.php.
 // phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
-$govcms_includes = isset($govcms_includes) ? $govcms_includes : __DIR__;
+$govcms_includes = $govcms_includes ?? __DIR__;
 
 /**
  * Include the corresponding *.services.yml.
@@ -84,11 +84,7 @@ if (getenv('ENABLE_REDIS')) {
       throw new \Exception('Drupal installation underway.');
     }
 
-    # Use a timeout to ensure that if Redis is down, that Drupal will
-    # continue to function.
-    if ($redis->connect($redis_host, $redis_port, 1) === FALSE) {
-      throw new \Exception('Redis server unreachable.');
-    }
+    $redis->connect($redis_host, $redis_port, $redis_timeout);
     $response = $redis->ping();
     if (strpos($response, 'PONG') === FALSE) {
       throw new \Exception('Redis could be reached but is not responding correctly.');

@@ -26,13 +26,27 @@ $config['key.key.akamai_client_secret']['key_provider'] = 'config';
 $config['key.key.akamai_client_secret']['key_provider_settings']['key_value'] = '1';
 
 /**
+* Determine which cluster should be the production cluster for the
+* stage_file_proxy url.
+*/
+switch (getenv('GOVCMS_PROJECT_TYPE')) {
+  case 'paas':
+    $cluster = 'govcms6';
+    break;
+
+  default:
+    $cluster = 'govcms5';
+    break;
+}
+
+/**
  * Configure stage file proxy.
  */
 if (getenv('STAGE_FILE_PROXY_URL')) {
   $config['stage_file_proxy.settings']['origin'] = getenv('STAGE_FILE_PROXY_URL');
 }
 elseif (getenv('LAGOON_PROJECT')) {
-  $config['stage_file_proxy.settings']['origin'] = 'https://nginx-' . getenv('LAGOON_PROJECT') . '-master.govcms.amazee.io';
+  $config['stage_file_proxy.settings']['origin'] = 'https://nginx-master-' . getenv('LAGOON_PROJECT') . ".{$cluster}.amazee.io";
 }
 
 /**

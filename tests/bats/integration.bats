@@ -30,20 +30,35 @@ load _helpers_govcms
   pushd "${SCAFFOLD_DIR}" || exit 1
 
   # Download PaaS scaffold to be able to bootstrap the site.
-  download_code_from_github "govCMS" "govCMS8-scaffold-paas"
+  git clone --depth 1 https://github.com/govCMS/scaffold "$(pwd)"
+  rm -rf .git
+
+  # Init the scaffold for Drupal 9 PaaS.
+  ahoy init test paas 9
+
+  # Prepare composer to install requirements.
+  composer config -g github-oauth.github.com "$GOVCMS_GITHUB_TOKEN"
+  # Change the distribution to HTTPS to prevent key issues.
+  cat composer.json | jq 'del(.repositories[-1:]) | .repositories += [{"type": "vcs", "url": "https://github.com/govcms/govcms"}]' > composer.https.json
+  mv composer.json composer.json.bkup
+  mv composer.https.json composer.json
 
   # Override scaffold repo path with a path to our version.
   composer config repositories.test path "${REPO_DIR}"
+
+  # Add repository definitions for asset.packagist dependencies.
+  composer config repositories.dropzone '{"type":"package","package":{"name":"dropzone/dropzone","version":"v5.7.2","type":"drupal-library","dist":{"type":"zip","url":"https://github.com/dropzone/dropzone/archive/refs/tags/v5.7.2.zip"}}}'
+  composer config repositories.chosen '{"type":"package","package":{"name":"harvesthq/chosen","version":"v1.8.7","type":"drupal-library","dist":{"type":"zip","url":"https://github.com/harvesthq/chosen/releases/download/v1.8.7/chosen_v1.8.7.zip"}}}'
 
   # Generate composer.lock and validate fresh install with latest dependencies.
   export COMPOSER_MEMORY_LIMIT=-1
   composer install --ignore-platform-reqs
 
   # Add the repo at the checked out version.
-  composer require govcms/scaffold-tooling:dev-"${LATEST_DEV_VERSION}" --ignore-platform-reqs --update-with-dependencies
+  composer config --global discard-changes true
+  composer require govcms/scaffold-tooling:dev-"${LATEST_DEV_VERSION}" --no-interaction --ignore-platform-reqs --update-with-dependencies
 
   # Ensure the binaries are available.
-  assert_file_exists vendor/bin/govcms-audit
   assert_file_exists vendor/bin/govcms-behat
   assert_file_exists vendor/bin/govcms-lint
   assert_file_exists vendor/bin/govcms-lint-distro
@@ -61,10 +76,12 @@ load _helpers_govcms
   assert_file_exists vendor/bin/govcms-pre-deploy
   assert_file_exists vendor/bin/govcms-pre-deploy-db-update
   assert_file_exists vendor/bin/govcms-update_site_alias
+  assert_file_exists vendor/bin/govcms-validate-active-modules
+  assert_file_exists vendor/bin/govcms-validate-modules
   assert_file_exists vendor/bin/govcms-validate-permissions
   assert_file_exists vendor/bin/govcms-validate-platform-yml
   assert_file_exists vendor/bin/govcms-validate-theme-yml
-  assert_file_exists vendor/bin/govcms-prevent-theme-modules
+  assert_file_exists vendor/bin/govcms-validate-theme-modules
   assert_file_exists vendor/bin/govcms-yaml_lint
   assert_file_exists vendor/bin/govcms-module_verify
   assert_file_exists vendor/bin/govcms-validate-illegal-files
@@ -73,7 +90,7 @@ load _helpers_govcms
   assert_file_contains vendor/govcms/scaffold-tooling/drupal/settings/all.settings.php "${LATEST_COMMIT}"
 
   # Assert that the settings are correct.
-  [ "$(yq r vendor/govcms/scaffold-tooling/drupal/settings/all.services.yml "parameters[session.storage.options].gc_maxlifetime")" -eq 14400 ];
+  [ "$(yq r vendor/govcms/scaffold-tooling/drupal/settings/all.services.yml "parameters[session.storage.options].gc_maxlifetime")" -eq 3600 ];
   [ "$(yq r vendor/govcms/scaffold-tooling/drupal/settings/all.services.yml "parameters[session.storage.options].gc_divisor")" -eq 100 ];
   [ "$(yq r vendor/govcms/scaffold-tooling/drupal/settings/all.services.yml "parameters[session.storage.options].gc_probability")" -eq 1 ];
   [ "$(yq r vendor/govcms/scaffold-tooling/drupal/settings/all.services.yml "parameters[session.storage.options].cookie_lifetime")" -eq 0 ];
