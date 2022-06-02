@@ -79,8 +79,8 @@ commands:
   lint:
     usage: Lint code
     cmd: |
-      docker-compose exec -T test ./vendor/bin/govcms-lint web/modules/custom
-      docker-compose exec -T test ./vendor/bin/govcms-lint web/themes/custom
+      [[ -z "$@" || "$@" =~ m(od(ules?)?)? ]] && docker-compose exec -T test ./vendor/bin/govcms-lint web/modules/custom
+      [[ -z "$@" || "$@" =~ t(hemes?)?     ]] && docker-compose exec -T test ./vendor/bin/govcms-lint web/themes/custom
 
   test-behat:
     usage: Run Behat tests.
