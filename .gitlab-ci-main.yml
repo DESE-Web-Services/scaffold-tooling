@@ -174,7 +174,6 @@ audit_on_merge:
   extends: .job-audit-on-merge
   script:
     - docker-compose exec -T test ./vendor/bin/govcms-audit
-    - exit 1 # force error to prevent webhook to deploy to master
   only:
     - merge_requests
   stage: deploy
@@ -221,3 +220,15 @@ deploy:
   except:
     variables:
       - $COMPOSER_UPDATE_FROM_API == "true"
+
+stop-deploy:
+  stage: .post
+  script:
+    - echo "Preventing pipeline deployment trigger..."
+    - exit 1
+  only:
+    refs:
+      - merge_requests
+    variables:
+      - $COMPOSER_UPDATE_FROM_API == "true"
+    
