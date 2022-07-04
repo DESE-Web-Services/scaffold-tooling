@@ -8,6 +8,7 @@ stages:
   - preflight
   - integration
   - deploy
+  - .post
 variables:
   extends: .variables
   DOCKER_HOST: "tcp://localhost:2375"
