@@ -8,7 +8,7 @@ stages:
   - preflight
   - integration
   - deploy
-  - .post
+  - post
 variables:
   extends: .variables
   DOCKER_HOST: "tcp://localhost:2375"
@@ -223,10 +223,10 @@ deploy:
       - $COMPOSER_UPDATE_FROM_API == "true"
 
 stop-deploy:
-  stage: .post
   script:
     - echo "Preventing pipeline deployment trigger..."
     - exit 1
+  stage: post
   only:
     refs:
       - merge_requests
