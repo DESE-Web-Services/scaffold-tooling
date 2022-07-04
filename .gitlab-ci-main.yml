@@ -177,7 +177,6 @@ audit_on_merge:
     - docker-compose exec -T test ./vendor/bin/govcms-audit
   only:
     - merge_requests
-  stage: deploy
 
 # Update composer dependencies - usually used to apply core patches.
 composer_update:
