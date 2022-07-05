@@ -223,7 +223,10 @@ deploy:
 
 stop-deploy:
   script:
-    - echo "Preventing pipeline deployment trigger..."
+    - echo "Forcing pipeline failure to avoid undesired deployment.
+            A GovCMS webhook triggers code deployment on pipeline success
+            which is not desired for this pipeline and can potentially
+            cause problems."
     - exit 1
   stage: .post
   rules:  
