@@ -8,6 +8,7 @@ stages:
   - preflight
   - integration
   - deploy
+  - .post
 variables:
   extends: .variables
   DOCKER_HOST: "tcp://localhost:2375"
@@ -150,7 +151,7 @@ preflight:
     variables:
       - $COMPOSER_UPDATE_FROM_API == "true"
       - $SKIP_PREFLIGHT == "true"
-      
+
 # Integration.
 behat:
   <<: *full_template
@@ -176,7 +177,6 @@ audit_on_merge:
     - docker-compose exec -T test ./vendor/bin/govcms-audit
   only:
     - merge_requests
-  stage: deploy
 
 # Update composer dependencies - usually used to apply core patches.
 composer_update:
@@ -220,3 +220,16 @@ deploy:
   except:
     variables:
       - $COMPOSER_UPDATE_FROM_API == "true"
+
+stop-deploy:
+  script:
+    - echo "Forcing pipeline failure to avoid undesired deployment.
+            A GovCMS webhook triggers code deployment on pipeline success
+            which is not desired for this pipeline and can potentially
+            cause problems."
+    - exit 1
+  stage: .post
+  rules:  
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $COMPOSER_UPDATE_FROM_API == "true"
+    
