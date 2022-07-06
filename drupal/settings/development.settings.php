@@ -47,3 +47,6 @@ if (getenv('DISABLE_SHIELD') === 'true') {
   $config['shield.settings']['credentials']['shield']['user'] = NULL;
   $config['shield.settings']['credentials']['shield']['pass'] = NULL;
 }
+
+// Deactivate config ignore.
+$settings['config_ignore_deactivate'] = TRUE;
