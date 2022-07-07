@@ -32,7 +32,7 @@ if (getenv('STAGE_FILE_PROXY_URL')) {
   $config['stage_file_proxy.settings']['origin'] = getenv('STAGE_FILE_PROXY_URL');
 }
 elseif (getenv('LAGOON_PROJECT')) {
-  $config['stage_file_proxy.settings']['origin'] = 'https://nginx-' . getenv('LAGOON_PROJECT') . '-master.govcms.amazee.io';
+  $config['stage_file_proxy.settings']['origin'] = 'https://nginx-master-' . getenv('LAGOON_PROJECT') . '.govcms6.amazee.io';
 }
 
 /**
@@ -47,3 +47,6 @@ if (getenv('DISABLE_SHIELD') === 'true') {
   $config['shield.settings']['credentials']['shield']['user'] = NULL;
   $config['shield.settings']['credentials']['shield']['pass'] = NULL;
 }
+
+// Deactivate config ignore.
+$settings['config_ignore_deactivate'] = TRUE;

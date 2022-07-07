@@ -12,8 +12,8 @@
     "drupal/clamav": "2.0.0",
     "drupal/coder": "8.3.x-dev",
     "drupal/drupal-extension": "4.1.0",
-    "drupal/lagoon_logs": "1.x-dev",
-    "drupal/redis": "1.4",
+    "drupal/lagoon_logs": "^2",
+    "drupal/redis": "1.5.0",
     "drupal/stage_file_proxy": "^1",
     "drush/drush": "^10",
     "phar-io/manifest": "^2",
@@ -57,6 +57,11 @@
         "web-root": "./web"
       }
     }
+  },
+  "config": {
+    "allow-plugins": {
+      "zaporylie/composer-drupal-optimizations": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   }
 }
-

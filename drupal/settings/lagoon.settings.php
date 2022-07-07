@@ -90,7 +90,7 @@ if (getenv('ENABLE_REDIS')) {
       throw new \Exception('Redis server unreachable.');
     }
     $response = $redis->ping();
-    if (strpos($response, 'PONG') === FALSE) {
+    if (!$response) {
       throw new \Exception('Redis could be reached but is not responding correctly.');
     }
 

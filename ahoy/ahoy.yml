@@ -79,8 +79,8 @@ commands:
   lint:
     usage: Lint code
     cmd: |
-      docker-compose exec -T test ./vendor/bin/govcms-lint web/modules/custom
-      docker-compose exec -T test ./vendor/bin/govcms-lint web/themes/custom
+      [[ -z "$@" || "$@" =~ m(od(ules?)?)? ]] && docker-compose exec -T test ./vendor/bin/govcms-lint web/modules/custom
+      [[ -z "$@" || "$@" =~ t(hemes?)?     ]] && docker-compose exec -T test ./vendor/bin/govcms-lint web/themes/custom
 
   test-behat:
     usage: Run Behat tests.
@@ -102,6 +102,13 @@ commands:
       ( cat .env | grep ^MARIADB_DATA_IMAGE | cut -c20- | xargs -n1 docker pull; docker-compose rm -f -s -v mariadb && ahoy up ) ||
       # Run this if confirm returns false
       echo "OK, probably a wise choice..."
+
+  ssh:
+    usage: Attempt to execute a command on the remote CLI container associated with the current environment and branch.
+    cmd: |
+      PROJ=$(cat .env | grep ^LAGOON_PROJECT | cut -c16-)
+      BRAN=$(git branch | awk '{printf $2}' | tr -c '[:alnum:]' '-')
+      [ "$#" -eq 0 ] && lagoon ssh -p "${PROJ}" -e "${BRAN}" || lagoon ssh -p "${PROJ}" -e "${BRAN}" -C "$@"
 
   audit-site:
     usage: Run site audit.
