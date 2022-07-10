@@ -1,5 +1,5 @@
 ---
-image: ${GILAB_CI_IMAGE:-gitlab-registry-production.govcms.amazee.io/jobs-paas/dese-d8/deptcms-ci}${GITLAB_CI_IMAGE_VERSION:-}
+image: ${GILAB_CI_IMAGE:-"gitlab-registry-production.govcms.amazee.io/jobs-paas/dese-d8/deptcms-ci"}${GITLAB_CI_IMAGE_VERSION:-}
 services:
   - name: gitlab-registry-production.govcms.amazee.io/govcms/govcms-ci/dind:latest
     command: ["--tls=false"]
