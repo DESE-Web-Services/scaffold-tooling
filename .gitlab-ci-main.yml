@@ -1,5 +1,5 @@
 ---
-image: ${GITLAB_CI_IMAGE:-"gitlab-registry-production.govcms.amazee.io/jobs-paas/dese-d8/deptcms-ci"}
+image: $GITLAB_CI_IMAGE
 services:
   - name: gitlab-registry-production.govcms.amazee.io/govcms/govcms-ci/dind:latest
     command: ["--tls=false"]
@@ -13,7 +13,8 @@ variables:
   extends: .variables
   DOCKER_HOST: "tcp://localhost:2375"
   COMPOSER_VERSION: --2
-
+  GITLAB_CI_IMAGE: ${DEPTCMS_CI_IMAGE:-"gitlab-registry-production.govcms.amazee.io/jobs-paas/dese-d8/deptcms-ci"}
+  
 ##
 # Test setups.
 #
