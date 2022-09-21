@@ -230,6 +230,5 @@ stop-deploy:
     - exit 1
   stage: .post
   rules:  
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $COMPOSER_UPDATE_FROM_API == "true"
     
